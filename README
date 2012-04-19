@@ -1,0 +1,8 @@
+Purpose:
+    to replace N900 original display (acx565akm) to Chinese Company TianMa display, which was used for 'Extended UI' project in 2010
+
+Modification:
+    Only the display parameters, due to both of them are RGB LCD
+
+TODO
+    experiment should be done
