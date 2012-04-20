@@ -234,7 +234,7 @@ static int panel_detect(struct acx565akm_device *md)
 	acx565akm_read(md, MIPID_CMD_READ_DISP_ID, md->display_id, 3);
 	dev_dbg(&md->spi->dev, "MIPI display ID: %02x%02x%02x\n",
 		md->display_id[0], md->display_id[1], md->display_id[2]);
-
+/*
 	switch (md->display_id[0]) {
 	case 0x10:
 		md->model = MIPID_VER_ACX565AKM;
@@ -259,10 +259,19 @@ static int panel_detect(struct acx565akm_device *md)
 		dev_err(&md->spi->dev, "invalid display ID\n");
 		return -ENODEV;
 	}
+*/
+		//if return here, the display didn't show content;
+		//a lot of efforts were done to find this, by Tom Xue
+		md->model = MIPID_VER_ACX565AKM;
+		md->panel.name = "TianMa, by Tom Xue";
+		md->has_bc = 1;
+		md->has_cabc = 1;
+
+
 
 	md->revision = md->display_id[1];
 
-	pr_info("omapfb: %s rev %02x LCD detected\n",
+	pr_info("omapfb: %s rev %02x LCD detected\n",	//can be seen via dmesg
 			md->panel.name, md->revision);
 
 	return 0;
@@ -648,22 +657,22 @@ static struct omap_panel acx565akm_panel = {
 		.x_res = 800,
 		.y_res = 480,
 
-		.pixel_clock	= 24000,    //30000 for TianMa display
+		.pixel_clock	= 30000,	//30MHz PCLK for TianMa LCD
 
-		.hsw		= 4,    //48
-		.hfp		= 28,   //40
-		.hbp		= 24,   //88
+		.hsw		= 48,
+		.hfp		= 40,
+		.hbp		= 40,		//88-48
 
-		.vsw		= 3,    //3
-		.vfp		= 3,    //13
-		.vbp		= 4,    //32
+		.vsw		= 3,
+		.vfp		= 13,
+		.vbp		= 29,		//32-3
 	},
 
 	.config		= OMAP_DSS_LCD_TFT |
 			  OMAP_DSS_LCD_IVS |
 			  OMAP_DSS_LCD_IHS,
 
-	.recommended_bpp = 16,  //TianMa - 24 for RGB888; 16 for RGB565
+	.recommended_bpp = 24,			//TianMa
 
 	/*
 	 * supported modes: 12bpp(444), 16bpp(565), 18bpp(666),  24bpp(888)

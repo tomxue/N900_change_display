@@ -2,7 +2,30 @@ Purpose:
     to replace N900 original display (acx565akm) to Chinese Company TianMa display, which was used for 'Extended UI' project in 2010
 
 Modification:
-    Only the display parameters, due to both of them are RGB LCD
+    The display parameters, due to both of them are RGB LCD
+    
+
+
+
+
+
+Problem:
+    N900 doesn't send any RGB-HV signals to TianMa display
+
+Analysis:    
+    HW design - LCD_SPI bus was not connected
+    SW - kernel code:
+        panel_detect -> acx565akm_read -> acx565akm_transfer -> spi_message_add_tail
+
+        panel_detect
+            for N900 kernel code
+                it must detect the right settings of display, init display and then display can work with RGB-HV signals
+            for driving TianMa's display
+                trick N900 with direct dummy settings to send RGB-HV signals
+
+
+
+
 
 TODO
     experiment should be done
