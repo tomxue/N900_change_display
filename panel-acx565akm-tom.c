@@ -263,7 +263,7 @@ static int panel_detect(struct acx565akm_device *md)
 		//if return here, the display didn't show content;
 		//a lot of efforts were done to find this, by Tom Xue
 		md->model = MIPID_VER_ACX565AKM;
-		md->panel.name = "TianMa, by Tom Xue";
+		md->panel.name = "acx565akm";
 		md->has_bc = 1;
 		md->has_cabc = 1;
 
