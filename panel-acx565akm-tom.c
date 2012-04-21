@@ -73,7 +73,7 @@ static void acx565akm_transfer(struct acx565akm_device *md, int cmd,
 
 	BUG_ON(md->spi == NULL);
 
-	spi_message_init(&m);
+	spi_message_init(&m);	//LCD_SPI(4:0)
 
 	memset(xfer, 0, sizeof(xfer));
 	x = &xfer[0];
@@ -176,11 +176,11 @@ static int panel_enabled(struct acx565akm_device *md)
 	u32 disp_status;
 	int enabled;
 
-	acx565akm_read(md, MIPID_CMD_READ_DISP_STATUS, (u8 *)&disp_status, 4);
+	acx565akm_read(md, MIPID_CMD_READ_DISP_STATUS, (u8 *)&disp_status, 4);	//read via SPI bus
 	disp_status = __be32_to_cpu(disp_status);
 	enabled = (disp_status & (1 << 17)) && (disp_status & (1 << 10));
 	dev_dbg(&md->spi->dev,
-		"LCD panel %senabled by bootloader (status 0x%04x)\n",
+		"LCD panel %senabled by bootloader (status 0x%04x)\n",		//TianMa display will show not enabled if no code change
 		enabled ? "" : "not ", disp_status);
 	return enabled;
 }
@@ -231,7 +231,7 @@ static unsigned get_hw_cabc_mode(struct acx565akm_device *md)
 
 static int panel_detect(struct acx565akm_device *md)
 {
-	acx565akm_read(md, MIPID_CMD_READ_DISP_ID, md->display_id, 3);
+	acx565akm_read(md, MIPID_CMD_READ_DISP_ID, md->display_id, 3);	//SPI read from LCD_SPI(4:0)
 	dev_dbg(&md->spi->dev, "MIPI display ID: %02x%02x%02x\n",
 		md->display_id[0], md->display_id[1], md->display_id[2]);
 /*
@@ -255,7 +255,7 @@ static int panel_detect(struct acx565akm_device *md)
 		md->panel.name = "ls041y3";
 		break;
 	default:
-		md->panel.name = "unknown";
+		md->panel.name = "unknown";	//TianMa display will come here if no code change
 		dev_err(&md->spi->dev, "invalid display ID\n");
 		return -ENODEV;
 	}
@@ -586,12 +586,12 @@ static int acx565akm_panel_init(struct omap_display *display)
 	 */
 	msleep(5);
 
-	md->enabled = panel_enabled(md);
+	md->enabled = panel_enabled(md);	//TianMa display not enabled if no code change
 
 	r = panel_detect(md);
-	if (r) {
-		if (!md->enabled && display->hw_config.panel_disable != NULL)
-			display->hw_config.panel_disable(display);
+	if (r) {	//TianMa display will come here if no code change
+		if (!md->enabled && display->hw_config.panel_disable != NULL)	//panel_disable is a func, means that if it exists
+			display->hw_config.panel_disable(display);	//TianMa display will be disable if no code change
 		mutex_unlock(&md->mutex);
 		return r;
 	}
